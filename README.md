@@ -165,6 +165,7 @@ pnpm preview
 
 3. **Configure Build Settings:**
    - **Production branch:** `main`
+   - **Node.js version:** `22` (automatically detected from `.nvmrc` or `.node-version`)
    - **Build command:** `corepack enable && corepack prepare pnpm@9.15.9 --activate && pnpm install --no-frozen-lockfile && pnpm build`
    - **Build output directory:** `dist`
    - **Framework preset:** None (or Vite if available)
@@ -174,7 +175,10 @@ pnpm preview
    pnpm install --no-frozen-lockfile && pnpm build
    ```
    
-   **Note:** We use `--no-frozen-lockfile` because Cloudflare Pages uses pnpm 8 by default, but our lockfile is for pnpm 9. The alternative is to regenerate the lockfile with pnpm 8, but pnpm 9 is preferred.
+   **Note:** 
+   - Node.js version 22 is specified in `.nvmrc` and `.node-version` files
+   - We use `--no-frozen-lockfile` because Cloudflare Pages uses pnpm 8 by default, but our lockfile is for pnpm 9. The alternative is to regenerate the lockfile with pnpm 8, but pnpm 9 is preferred.
+   - Cloudflare Pages will automatically detect the Node.js version from `.nvmrc` or `.node-version` files
 
 4. **Environment Variables (optional):**
    - `VITE_API_URL`: The URL of your redstr-server API (e.g., `https://api.example.com`)
