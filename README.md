@@ -165,9 +165,16 @@ pnpm preview
 
 3. **Configure Build Settings:**
    - **Production branch:** `main`
-   - **Build command:** `mise install && pnpm install && pnpm build`
+   - **Build command:** `corepack enable && corepack prepare pnpm@9.15.9 --activate && pnpm install --no-frozen-lockfile && pnpm build`
    - **Build output directory:** `dist`
    - **Framework preset:** None (or Vite if available)
+   
+   **Alternative (simpler) build command:**
+   ```
+   pnpm install --no-frozen-lockfile && pnpm build
+   ```
+   
+   **Note:** We use `--no-frozen-lockfile` because Cloudflare Pages uses pnpm 8 by default, but our lockfile is for pnpm 9. The alternative is to regenerate the lockfile with pnpm 8, but pnpm 9 is preferred.
 
 4. **Environment Variables (optional):**
    - `VITE_API_URL`: The URL of your redstr-server API (e.g., `https://api.example.com`)
@@ -227,7 +234,7 @@ jobs:
       - name: Install tools and dependencies
         run: |
           mise install
-          pnpm install
+          pnpm install --no-frozen-lockfile
       - name: Build
         run: pnpm build
       - uses: cloudflare/pages-action@v1
