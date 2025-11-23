@@ -1,38 +1,51 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
+interface TransformResponse {
+  output: string
+}
+
+interface FunctionsResponse {
+  functions: string[]
+}
+
+interface ErrorResponse {
+  error: string
+}
+
 function App() {
-  const [input, setInput] = useState('')
-  const [output, setOutput] = useState('')
-  const [selectedFunction, setSelectedFunction] = useState('leetspeak')
-  const [availableFunctions, setAvailableFunctions] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [apiUrl, setApiUrl] = useState(API_BASE_URL)
-  const [copied, setCopied] = useState(false)
+  const [input, setInput] = useState<string>('')
+  const [output, setOutput] = useState<string>('')
+  const [selectedFunction, setSelectedFunction] = useState<string>('leetspeak')
+  const [availableFunctions, setAvailableFunctions] = useState<string[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [apiUrl, setApiUrl] = useState<string>(API_BASE_URL)
+  const [copied, setCopied] = useState<boolean>(false)
 
-  useEffect(() => {
-    fetchFunctions()
-  }, [apiUrl])
-
-  const fetchFunctions = async () => {
+  const fetchFunctions = useCallback(async () => {
     try {
       const response = await fetch(`${apiUrl}/functions`)
       if (!response.ok) throw new Error('Failed to fetch functions')
-      const data = await response.json()
+      const data: FunctionsResponse = await response.json()
       setAvailableFunctions(data.functions || [])
       if (data.functions && data.functions.length > 0 && !data.functions.includes(selectedFunction)) {
         setSelectedFunction(data.functions[0])
       }
       setError(null)
     } catch (err) {
-      setError(`Failed to connect to API: ${err.message}`)
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setError(`Failed to connect to API: ${errorMessage}`)
       console.error('Error fetching functions:', err)
     }
-  }
+  }, [apiUrl, selectedFunction])
 
-  const handleTransform = async () => {
+  useEffect(() => {
+    fetchFunctions()
+  }, [fetchFunctions])
+
+  const handleTransform = async (): Promise<void> => {
     if (!input.trim()) {
       setError('Please enter some text to transform')
       return
@@ -55,21 +68,22 @@ function App() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
+        const errorData: ErrorResponse = await response.json()
         throw new Error(errorData.error || 'Transformation failed')
       }
 
-      const data = await response.json()
+      const data: TransformResponse = await response.json()
       setOutput(data.output || '')
     } catch (err) {
-      setError(err.message || 'An error occurred during transformation')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred during transformation'
+      setError(errorMessage)
       console.error('Error transforming:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCopy = async () => {
+  const handleCopy = async (): Promise<void> => {
     if (output) {
       try {
         await navigator.clipboard.writeText(output)
@@ -81,7 +95,7 @@ function App() {
     }
   }
 
-  const handleClear = () => {
+  const handleClear = (): void => {
     setInput('')
     setOutput('')
     setError(null)
