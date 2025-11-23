@@ -1,0 +1,24 @@
+[tools]
+node = "22"
+pnpm = "9"
+
+[tasks.dev]
+description = "Start development server"
+run = "pnpm dev"
+
+[tasks.build]
+description = "Build for production"
+run = "pnpm build"
+
+[tasks.preview]
+description = "Preview production build"
+run = "pnpm preview"
+
+[tasks.lint]
+description = "Run linter"
+run = "pnpm lint"
+
+[tasks.install]
+description = "Install dependencies"
+run = "pnpm install"
+
