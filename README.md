@@ -166,19 +166,15 @@ pnpm preview
 3. **Configure Build Settings:**
    - **Production branch:** `main`
    - **Node.js version:** `22` (automatically detected from `.nvmrc` or `.node-version`)
-   - **Build command:** `corepack enable && corepack prepare pnpm@9.15.9 --activate && pnpm install --no-frozen-lockfile && pnpm build`
+   - **Build command:** `pnpm build`
    - **Build output directory:** `dist`
    - **Framework preset:** None (or Vite if available)
    
-   **Alternative (simpler) build command:**
-   ```
-   pnpm install --no-frozen-lockfile && pnpm build
-   ```
-   
    **Note:** 
    - Node.js version 22 is specified in `.nvmrc` and `.node-version` files
-   - We use `--no-frozen-lockfile` because Cloudflare Pages uses pnpm 8 by default, but our lockfile is for pnpm 9. The alternative is to regenerate the lockfile with pnpm 8, but pnpm 9 is preferred.
    - Cloudflare Pages will automatically detect the Node.js version from `.nvmrc` or `.node-version` files
+   - Cloudflare Pages automatically installs dependencies using `pnpm install --frozen-lockfile` before running the build command
+   - pnpm 9.15.9 is automatically detected from `package.json` `packageManager` field
 
 4. **Environment Variables (optional):**
    - `VITE_API_URL`: The URL of your redstr-server API (e.g., `https://api.example.com`)
@@ -200,18 +196,12 @@ pnpm preview
    wrangler login
    ```
 
-3. **Install tools and dependencies:**
-   ```bash
-   mise install
-   pnpm install
-   ```
-
-4. **Build the project:**
+3. **Build the project:**
    ```bash
    pnpm build
    ```
 
-5. **Deploy:**
+4. **Deploy:**
    ```bash
    wrangler pages deploy dist
    ```
